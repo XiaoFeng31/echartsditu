@@ -1,0 +1,219 @@
+<!--
+ * @Author: your name
+ * @Date: 2020-03-17 14:12:21
+ * @LastEditTime: 2020-03-20 20:52:04
+ * @LastEditors: Please set LastEditors
+ * @Description: In User Settings Edit
+ * @FilePath: \练习\html css\index.html
+ -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <style type="text/css">
+    #button {
+      position: absolute;
+      left: 200px;
+      top: 100px;
+    }
+  </style>
+  <body>
+    <div
+      id="main"
+      style="width :800px;height:600px;border:1px solid black;margin:0 auto"
+    ></div>
+    <input type="button" value="返回中国地图首页" onclick="fhChina()" />
+    <textarea id="txt" hidden>
+1 广东 64
+2 山东 7
+3 河南 1
+4 四川 2
+5 江苏 0
+6 河北 2
+7 湖南 0
+8 安徽 0
+9 湖北 6285
+10 浙江 14
+11 广西 2
+12 云南 2
+13 江西 0
+14 辽宁 2
+15 黑龙江 8
+16 陕西 7
+17 福建 3
+18 山西 0
+19 贵州 0
+20 重庆 0
+21 吉林 0
+22 甘肃 34
+23 内蒙古 0
+24 台湾 107
+25 上海 42
+26 新疆 0
+27 北京 93
+28 天津 1
+29 海南 1
+30 香港 83
+31 宁夏 0
+32 青海 0
+33 西藏 0
+34 澳门 3
+35 南海诸岛 0
+36 武汉 6116
+37 孝感 41
+38 鄂州 33
+39 随州 26
+40 荆门 14
+41 荆州 13
+42 仙桃 11
+43 黄石 10
+44 宜昌 9
+45 襄阳 5
+46 十堰 3
+47 天门 2
+48 潜江 2
+
+    </textarea>
+    <textarea id="province" hidden>
+name.1=北京(BeiJing)
+name.2=上海(ShangHai)
+name.3=天津(TianJin)
+name.4=重庆(ChongQing)
+name.5=香港(XiangGang)
+name.6=澳门(Aomen)
+name.7=安徽(AnHui)
+name.8=福建(FuJian)
+name.9=广东(GuangDong)
+name.10=广西(GuangXi)
+name.11=贵州(GuiZhou)
+name.12=甘肃(GanSu)
+name.13=海南(HaiNan)
+name.14=河北(HeBei)
+name.15=河南(HeNan)
+name.16=黑龙江(HeiLongJiang)
+name.17=湖北(HuBei)
+name.18=湖南(HuNan)
+name.19=吉林(JiLin)
+name.20=江苏(JiangSu)
+name.21=江西(JiangXi)
+name.22=辽宁(LiaoNing)
+name.23=内蒙古(NeiMengGu)
+name.24=宁夏(NingXia)
+name.25=青海(QingHai)
+name.26=陕西(ShanXi)
+name.27=山西(ShanXi)
+name.28=山东(ShanDong)
+name.29=四川(SiChuan)
+name.30=台湾(TaiWan)
+name.31=西藏(XiZang)
+name.32=新疆(XinJiang)
+name.33=云南(YunNan)
+name.34=浙江(ZheJiang)      
+    </textarea>
+    <script src="js/echarts.min.js"></script>
+    <script src="js/china.js"></script>
+    <script>
+      //对数据进行出路
+      var data = document.getElementById("txt").innerHTML;
+      data = data.split("\n"); //通过换行切割字符串，返回一个数组
+      data = data.map(function(item) {
+        var it = item.split(" "); //再用空格切割成数组
+        return { name: it[1], value: it[2] };
+      }); //数组遍历的一种方法，返回值新数组，参数使用回调函数
+      var myChart = echarts.init(document.getElementById("main"));
+      var option = {
+        title: {
+          text: "中国各省份新冠肺炎现存确诊人数统计——截止3月20日",
+          subtext: "数据来源于百度"
+        },
+        series: {
+          name: "各个省份人口数量",
+          type: "map",
+          map: "china",
+          label: {
+            show: true
+          },
+          data: data,
+          roam: true //拖拽效果
+        },
+        tooltip: {
+          formatter: "{b}省显存确诊数量：{c}人"
+        },
+        visualMap: {
+          min: 0,
+          max: 200,
+          inRange: {
+            color: ["#ffffff", "#ff0000"]
+          }
+        }
+      };
+      myChart.setOption(option);
+      var datapro = document.getElementById("province").innerHTML.split("\n");
+
+      var proobj = new Object(); //创建一个省份名称对象
+      for (var item of datapro) {
+        //利用 for of 遍历数组
+        var start = item.indexOf("=") + 1; //从等号开始切割
+        var end = item.indexOf("(");
+        var hz = item.slice(start, end);
+        var py = item
+          .slice(item.indexOf("(") + 1, item.indexOf(")"))
+          .toLowerCase(); //toLowerCase转换成小写
+
+        proobj[hz] = py;
+
+        //将汉字对应到拼音;
+      }
+      proobj["陕西"] = proobj["陕西"] + "1";
+      //console.log(proobj);
+      //获取引入地图的script元素
+      //var mapjs = document.getElementById("mapjs");
+      //利用js切换吊option里面的内容  DOM操作
+      //1.找到触发操作
+      //2.绑定事件 onlick--》
+      //myChart.on("click", function(parames) {
+      //3.找到你想改变的元素 option里series中map的值
+      //4.改变元素
+      //var spt = document.createElement("script");
+      //spt.src = "js/province/heilongjiang.js";
+      //document.body, appendChild(spt);
+      //option.series.map = parames.name;
+
+      //}); //这是这个框架写死的触发时间
+
+      //通过用户交互，加载页面
+      // myChart.on("click", function(parames) {
+      //   console.log(parames.name);
+      //   //1.创建一个script标签
+      //   var script = document.createElement("script");
+      //   script.src = "js/province/guangdong.js";
+      //   document.body.appendChild(script);
+
+      //   setTimeout(function() {
+      //     option.series.map = parames.name;
+      //     myChart.setOption(option);
+      //   }, 1000); //一次性定时器，间隔毫秒，给予一个缓冲的时间加载地图
+      // });
+      //2.定义不同的触发时间，先执行加载js文件，再加载地图
+      myChart.on("mousedown", function(parames) {
+        var script = document.createElement("script");
+        script.src = "js/" + proobj[parames.name] + ".js"; //通过字符串拼接
+        document.body.appendChild(script);
+      }); //on就是触发事件，按下加载js文件
+      myChart.on("mouseup", function(parames) {
+        option.series.map = parames.name;
+        myChart.setOption(option);
+      });
+      //btn按钮点击返回中国地图
+      function fhChina() {
+        document.body.lastElementChild.remove();
+        option.series.map = "china";
+        myChart.setOption(option, true);
+      }
+    </script>
+  </body>
+</html>
